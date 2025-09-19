@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  neo4j:
+    image: neo4j
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+        NEO4J_AUTH: "neo4j/passwd"
+
+    volumes:
+      - neo4j_data:/data
+
+    healthcheck:
+        test: ["CMD", "cypher-shell", "-u", "neo4j","-p","passwd","RETURN 1;"]
+        interval: 5s 
+        retries: 5
+        start_period: 10s 
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s 
+      retries: 5 
+      start_period: 5s 
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+        POSTGRES_USER: pg 
+        POSTGRES_PASSWORD: 1234
+        POSTGRES_DB: flowdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+volumes:
+  neo4j_data:
+  
+  redis_data:
+
+  postgres_data:
